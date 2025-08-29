@@ -30,10 +30,9 @@ namespace Tasks.Services
                 Email = register.Email,
                 Username = register.Username,
                 Role = Roles.User,
-                CreatedAt = DateTime.Now,
             };
 
-            user.Password = new PasswordHasher<User>().HashPassword(user, register.Password);
+            user.Password = _hasher.HashPassword(user, register.Password);
 
             await _db.Users.AddAsync(user);
             await _db.SaveChangesAsync();

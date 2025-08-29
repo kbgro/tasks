@@ -80,6 +80,10 @@ namespace Tasks
             builder.Services.AddScoped<ITaskService, TaskService>();
 
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<TaskContext>().Seed();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -94,5 +98,6 @@ namespace Tasks
             app.MapControllers();
             app.Run();
         }
+
     }
 }

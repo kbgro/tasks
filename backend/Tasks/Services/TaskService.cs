@@ -19,11 +19,8 @@ namespace Tasks.Services
             var taskEntity = new TaskEntity()
             {
                 Title = task.Title,
-                Status = Models.TaskStatus.Todo,
                 Priority = task.Priority,
                 creatorId = creatorId,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
                 AssigneeId = task.AssigneeId,
                 Description = task.Description,
             };
