@@ -47,5 +47,11 @@ namespace Tasks.Services
             return user;
 
         }
+
+        public async Task<List<UserResponse>> Listing()
+        {
+            return await _db.Users.Select(u => new UserResponse { ID = u.ID, Username = u.Username }).ToListAsync();
+        }
+
     }
 }
