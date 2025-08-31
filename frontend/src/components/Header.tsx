@@ -1,8 +1,16 @@
 import { NavLink } from 'react-router';
 import icon from '../assets/icon.svg';
+import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { logout } from '../store/auth';
 
 function Header() {
-    const handleLogout = () => {};
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate("/login");
+    };
 
     return (
         <header className="shadow p-1">
@@ -14,7 +22,7 @@ function Header() {
                     <div className="items-center">
                         <button
                             type="button"
-                            className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center cursor-pointer"
+                            className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-5 py-1.5 text-center cursor-pointer"
                             onClick={handleLogout}
                         >
                             Logout

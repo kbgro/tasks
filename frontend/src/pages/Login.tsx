@@ -8,6 +8,7 @@ import type { LoginRequest } from '../api/auth';
 import { useAppSelector } from '../store/hooks';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import Alert from '../components/Alert';
+import { useEffect } from 'react';
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email().required('Required'),
@@ -29,9 +30,13 @@ function Login() {
         },
     });
 
-    if (loggedIn) {
-        navigator('/');
-    }
+    console.log(loggedIn);
+
+    useEffect(() => {
+        if (loggedIn) {
+            navigator('/');
+        }
+    }, [loggedIn, loading, api]);
 
     return (
         <section className="h-screen">

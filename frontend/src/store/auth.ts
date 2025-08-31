@@ -12,8 +12,8 @@ interface AuthState {
 
 const initialState: AuthState = {
     loading: false,
-    loggedIn: false,
-    accessToken: '',
+    loggedIn: localStorage.getItem("access_token") != undefined,
+    accessToken: localStorage.getItem("access_token") ?? "",
     api: undefined,
     users: [],
 };
@@ -32,7 +32,12 @@ export const register = createAsyncThunk('auth/register', async (registerRequest
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {},
+    reducers: {
+        logout: (state) => {
+            localStorage.removeItem("access_token");
+            state.loggedIn = false;
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(login.pending, (state) => {
             state.loading = true;
@@ -43,6 +48,7 @@ export const authSlice = createSlice({
             state.loading = false;
             state.loggedIn = true;
             state.api = action.payload;
+            localStorage.setItem("access_token", action.payload.data.access_token);
         });
 
         builder.addCase(login.rejected, (state) => {
@@ -63,5 +69,7 @@ export const authSlice = createSlice({
         });
     },
 });
+
+export const {logout} = authSlice.actions;
 
 export default authSlice.reducer;
