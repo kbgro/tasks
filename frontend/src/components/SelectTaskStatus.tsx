@@ -3,7 +3,7 @@ export type TaskState = 'Todo' | 'InProgress' | 'Done';
 export type SelectTaskStatusProps = {
     disabled?: boolean;
     error?: string;
-    value: TaskState;
+    value?: TaskState;
     labelSrOnly?: boolean;
     onChange: React.ChangeEventHandler<HTMLSelectElement>;
 };

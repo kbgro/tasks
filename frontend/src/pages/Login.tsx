@@ -30,8 +30,6 @@ function Login() {
         },
     });
 
-    console.log(loggedIn);
-
     useEffect(() => {
         if (loggedIn) {
             navigator('/');

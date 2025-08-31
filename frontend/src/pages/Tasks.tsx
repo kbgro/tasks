@@ -1,6 +1,9 @@
 import { FaPlus } from 'react-icons/fa';
 import { MdDeleteOutline, MdEdit, MdOutlineFilterList } from 'react-icons/md';
 import { useNavigate } from 'react-router';
+import SelectTaskStatus from '../components/SelectTaskStatus';
+import SelectUser from '../components/SelectUser';
+import type { ChangeEvent } from 'react';
 
 function Tasks() {
     const navigate = useNavigate();
@@ -51,40 +54,13 @@ function Tasks() {
 
             <div id="task-filter" className="my-2 flex items-center space-x-2">
                 <MdOutlineFilterList size={22} />
-
-                <div>
-                    <label htmlFor="status" className="block mb-2 text-sm font-medium text-gray-900 sr-only">
-                        Select status
-                    </label>
-                    <select
-                        id="status"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-1.5 p-2.5"
-                    >
-                        <option selected>select status</option>
-                        {taskData.status.map((s, idx) => (
-                            <option key={`${s}-${idx}`} value={s}>
-                                {s}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label htmlFor="assignee" className="block mb-2 text-sm font-medium text-gray-900 sr-only">
-                        Select assignee
-                    </label>
-                    <select
-                        id="assignee"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-1.5 p-2.5"
-                    >
-                        <option selected>select an assignee</option>
-                        {taskData.assignees.map((a, idx) => (
-                            <option key={`${a}-${idx}`} value={a}>
-                                {a}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <SelectTaskStatus labelSrOnly value={undefined} onChange={function (event: ChangeEvent<HTMLSelectElement>): void {}} />
+                <SelectUser
+                    value={''}
+                    label={''}
+                    labelSrOnly
+                    onChange={function (event: ChangeEvent<HTMLSelectElement>): void {}}
+                />
             </div>
 
             <div id="task-list" className="space-y-2">

@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import authAPI, { type ApiResponse, type LoginRequest, type RegisterRequest, type User } from '../api/auth';
+import { createAsyncThunk,createSlice } from '@reduxjs/toolkit';
+import authAPI, { type ApiResponse, type LoginRequest, type RegisterRequest, type User, type UserResponse } from '../api/auth';
 
 
 interface AuthState {
@@ -20,12 +20,16 @@ const initialState: AuthState = {
 
 export const login = createAsyncThunk('auth/login', async (loginRequest: LoginRequest) => {
     const response = await authAPI.Login(loginRequest);
-    console.log({response});
     return response;
 });
 
 export const register = createAsyncThunk('auth/register', async (registerRequest: RegisterRequest) => {
     const response = await authAPI.Register(registerRequest);
+    return response;
+});
+
+export const fetchUsers = createAsyncThunk('users', async (thunkAPI) => {
+    const response = await authAPI.Users();
     return response;
 });
 
@@ -67,6 +71,12 @@ export const authSlice = createSlice({
         builder.addCase(register.rejected, (state) => {
             state.loading = false;
         });
+
+        builder.addCase(fetchUsers.fulfilled, (state, action) => {
+            state.api = action.payload;
+            state.users = action.payload.data;
+        });
+
     },
 });
 

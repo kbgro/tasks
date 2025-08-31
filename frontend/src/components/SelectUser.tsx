@@ -1,3 +1,8 @@
+import { useEffect } from 'react';
+import { useAppSelector } from '../store/hooks';
+import { useDispatch } from 'react-redux';
+import { fetchUsers } from '../store/auth';
+
 export type SelectUserProps = {
     value: string | number;
     label: string;
@@ -8,6 +13,8 @@ export type SelectUserProps = {
 };
 
 function SelectUser({ label, error, disabled, value, labelSrOnly, onChange }: SelectUserProps) {
+    const users = useAppSelector((s) => s.users.users);
+    const dispatch = useDispatch();
     const colorVariants = {
         label: `text-gray-900`,
         labelError: 'text-red-700',
@@ -15,11 +22,15 @@ function SelectUser({ label, error, disabled, value, labelSrOnly, onChange }: Se
         inputError: 'border border-red-700 bg-gray-50 text-red-700',
     };
 
-    const users = [
+    /*const users = [
         { username: 'user', id: 2 },
         { username: 'me', id: 3 },
         { username: 'admin', id: 1 },
-    ];
+    ];*/
+
+    useEffect(() => {
+        dispatch(fetchUsers());
+    }, []);
 
     return (
         <div>
