@@ -1,44 +1,59 @@
-import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import * as Yup from 'yup';
 import Input from '../components/Input';
 import { useFormik } from 'formik';
+import { useDispatch } from 'react-redux';
+import { login } from '../store/auth';
+import type { LoginRequest } from '../api/auth';
+import { useAppSelector } from '../store/hooks';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import Alert from '../components/Alert';
 
 const LoginSchema = Yup.object().shape({
-    username: Yup.string().required('Required'),
+    email: Yup.string().email().required('Required'),
     password: Yup.string().required('Required'),
 });
 
 function Login() {
     const navigator = useNavigate();
-    const [count, setCount] = useState(0);
-    const formik = useFormik({
+    const dispatch = useDispatch();
+    const { loading, loggedIn, api } = useAppSelector((s) => s.users);
+    const formik = useFormik<LoginRequest>({
         validationSchema: LoginSchema,
         initialValues: {
             password: '',
-            username: '',
+            email: '',
         },
         onSubmit: (values) => {
-            console.log({ values });
-            navigator('/');
+            dispatch(login(values));
         },
     });
+
+    if (loggedIn) {
+        navigator('/');
+    }
 
     return (
         <section className="h-screen">
             <div className="h-full flex flex-col items-center justify-center px-6 py-8 mx-auto">
+                {api?.status == 'failed' && (
+                    <div className="w-full sm:max-w-md mb-4">
+                        <Alert variant="Danger" message={api?.message as string} />{' '}
+                    </div>
+                )}
+
                 <div className="w-full bg-white rounded-lg shadow sm:max-w-md">
                     <div className="p-6 space-y-4">
                         <h1 className="text-xl font-bold leading-tight text-gray-900">Sign in to your account</h1>
                         <form className="space-y-4" onSubmit={formik.handleSubmit}>
                             <Input
-                                label={'Username'}
-                                type={'text'}
-                                id={'username'}
-                                name={'username'}
-                                value={formik.values.username}
+                                label={'Email'}
+                                type={'email'}
+                                id={'email'}
+                                name={'email'}
+                                value={formik.values.email}
                                 onChange={formik.handleChange}
-                                error={formik.errors.username}
+                                error={formik.errors.email}
                             />
                             <Input
                                 label={'Password'}
@@ -53,8 +68,15 @@ function Login() {
                             <button
                                 type="submit"
                                 className="w-full text-white bg-orange-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer"
+                                disabled={loading}
                             >
-                                Login
+                                {!loading ? (
+                                    <span>Login</span>
+                                ) : (
+                                    <span className="animate-spin flex justify-center">
+                                        <AiOutlineLoading3Quarters size={20} />
+                                    </span>
+                                )}
                             </button>
 
                             <p className="text-sm font-light text-gray-500">

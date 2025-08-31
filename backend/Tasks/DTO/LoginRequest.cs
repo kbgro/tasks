@@ -8,8 +8,6 @@ namespace Tasks.DTO
         public required string Email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        [RegularExpression(@"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$", 
-            ErrorMessage = "Password must be at least one upper case, at least one lower case, at least one digit and a minimum 8 chars in length")]
         public required string Password { get; set; }
 
     }
