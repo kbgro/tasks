@@ -15,7 +15,9 @@
         public TaskStatus Status { get; set; } = TaskStatus.Todo;
         public int Priority { get; set; }
         public int AssigneeId { get; set; }
-        public int creatorId { get; set; }
+        public User Assignee { get; set; }
+        public int CreatorId { get; set; }
+        public User Creator { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 

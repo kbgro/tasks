@@ -16,13 +16,18 @@ namespace Tasks.Services
 
         public async Task<TaskEntity> Add(TaskRequest task, int creatorId)
         {
+            var assignee = await _db.Users.FirstOrDefaultAsync(u => u.ID == task.AssigneeId);
+            var creator = await _db.Users.FirstOrDefaultAsync(u => u.ID == creatorId);
+
             var taskEntity = new TaskEntity()
             {
                 Title = task.Title,
                 Priority = task.Priority,
-                creatorId = creatorId,
+                CreatorId = creatorId,
                 AssigneeId = task.AssigneeId,
                 Description = task.Description,
+                Creator = creator,
+                Assignee = assignee
             };
 
             await _db.Tasks.AddAsync(taskEntity);
@@ -73,5 +78,30 @@ namespace Tasks.Services
             return taskEntity;
         }
 
+        public async Task<TaskResponse?> Get(int id)
+        {
+            var task = await _db.Tasks
+                .Include(t => t.Assignee)
+                .Include(t => t.Creator)
+                .Where(t => t.ID == id)
+                .Select(t => new TaskResponse
+                {
+                    ID = t.ID,
+                    Title = t.Title,
+                    Description = t.Description,
+                    Status = t.Status,
+                    Priority = t.Priority,
+                    AssigneeId = t.AssigneeId,
+                    CreatorId = t.CreatorId,
+                    CreatedAt = t.CreatedAt,
+                    UpdatedAt = t.UpdatedAt,
+                    Assignee = new() { ID = t.Assignee.ID, Username = t.Assignee.Username },
+                    Creator = new() { ID = t.Creator.ID, Username = t.Creator.Username }
+                })
+                .FirstOrDefaultAsync();
+
+            return task;
+
+        }
     }
 }

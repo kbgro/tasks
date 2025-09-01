@@ -13,6 +13,18 @@ namespace Tasks.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<TaskEntity>()
+                .HasOne(t => t.Assignee)
+                .WithMany()
+                .HasForeignKey(b => b.AssigneeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TaskEntity>()
+                .HasOne(t => t.Creator)
+                .WithMany()
+                .HasForeignKey(b => b.CreatorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(modelBuilder);
         }
 

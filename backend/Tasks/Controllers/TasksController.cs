@@ -8,7 +8,7 @@ namespace Tasks.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TasksController : ControllerBase
     {
         private readonly ITaskService _taskService;
@@ -49,6 +49,23 @@ namespace Tasks.Controllers
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
             var taskEntity = await _taskService.Add(taskRequest, 1);
+
+            return Ok(taskEntity);
+        }
+
+        [HttpGet("{id}", Name = "Get Task")]
+        public async Task<IActionResult> Get(int id)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            var taskEntity = await _taskService.Get(id);
+            if (taskEntity == null)
+            {
+                return BadRequest(new Dictionary<string, object>()
+                {
+                    {"message", "task not found." }
+                });
+            }
 
             return Ok(taskEntity);
         }
