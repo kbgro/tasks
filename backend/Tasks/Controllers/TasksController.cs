@@ -94,8 +94,8 @@ namespace Tasks.Controllers
         [HttpDelete("{id}", Name = "DeleteTask")]
         public async Task<IActionResult> Delete(int id)
         {
-            var task = _taskService.Exists(id);
-            if (task == null)
+            var taskExists = await _taskService.Exists(id);
+            if (taskExists)
             {
                 await _taskService.Remove(id);
             }

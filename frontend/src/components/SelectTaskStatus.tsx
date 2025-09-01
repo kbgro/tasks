@@ -34,7 +34,7 @@ function SelectTaskStatus({ value, error, disabled, labelSrOnly, onChange }: Sel
                 onChange={onChange}
                 disabled={disabled}
             >
-                <option>select status</option>
+                <option value={""}>select status</option>
                 {taskStatus.map((s, idx) => (
                     <option key={`${s}-${idx}`} value={s}>
                         {s}

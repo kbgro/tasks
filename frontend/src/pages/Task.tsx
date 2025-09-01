@@ -4,15 +4,9 @@ import SelectUser from '../components/SelectUser';
 import { MdEdit } from 'react-icons/md';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
-export type TaskEditItem = {
-    title: string;
-    description: string;
-    status: TaskState;
-    priority: number;
-    assigneeId: number;
-    creatorId?: number;
-};
+import type { TaskRequest } from '../api/tasks';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { useNavigate } from 'react-router';
 
 export type TaskItem = {
     id?: number;
@@ -30,11 +24,12 @@ export type TaskItem = {
 export type Mode = 'New' | 'Edit' | 'View';
 export type TaskProps = {
     mode: Mode;
-    task?: TaskEditItem;
+    loading?: boolean;
+    task?: TaskRequest;
     className?: string;
     onModeChange?: (mode: Mode) => void;
-    onSave?: (task: TaskEditItem) => void;
-    onUpdate?: (task: TaskEditItem) => void;
+    onSave?: (task: TaskRequest) => void;
+    onUpdate?: (task: TaskRequest) => void;
 };
 
 const TaskSchema = Yup.object().shape({
@@ -44,8 +39,9 @@ const TaskSchema = Yup.object().shape({
     assigneeId: Yup.number().positive().required('Required'),
 });
 
-function Task({ task, className, mode, onModeChange, onSave, onUpdate }: TaskProps) {
-    const formik = useFormik<TaskEditItem>({
+function Task({ task, loading, className, mode, onModeChange, onSave, onUpdate }: TaskProps) {
+    const navigate = useNavigate();
+    const formik = useFormik<TaskRequest>({
         validationSchema: TaskSchema,
         initialValues: {
             title: task?.title || '',
@@ -53,7 +49,6 @@ function Task({ task, className, mode, onModeChange, onSave, onUpdate }: TaskPro
             status: task?.status || 'Todo',
             priority: task?.priority || 0,
             assigneeId: task?.assigneeId || 0,
-            creatorId: task?.creatorId || 0,
         },
         onSubmit: (values) => {
             if (mode == 'New') onSave?.(values);
@@ -63,13 +58,6 @@ function Task({ task, className, mode, onModeChange, onSave, onUpdate }: TaskPro
 
     const handleModeChange = (newMode: Mode) => {
         onModeChange?.(newMode);
-    };
-
-    const handleTaskSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-        e.preventDefault();
-        if (mode == 'Edit') {
-            handleModeChange('View');
-        }
     };
 
     return (
@@ -143,7 +131,7 @@ function Task({ task, className, mode, onModeChange, onSave, onUpdate }: TaskPro
                             <button
                                 type="button"
                                 className="text-black bg-white hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-1.5 text-center cursor-pointer hover:shadow-md"
-                                onClick={() => handleModeChange('View')}
+                                onClick={() => navigate(`/tasks/${task?.id}`)}
                             >
                                 Cancel
                             </button>
@@ -152,8 +140,15 @@ function Task({ task, className, mode, onModeChange, onSave, onUpdate }: TaskPro
                             <button
                                 type="submit"
                                 className="text-white bg-orange-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-1.5 text-center cursor-pointer hover:shadow-md"
+                                disabled={loading}
                             >
-                                Save
+                                {!loading ? (
+                                    <span>Save</span>
+                                ) : (
+                                    <span className="animate-spin flex justify-center">
+                                        <AiOutlineLoading3Quarters size={20} />
+                                    </span>
+                                )}
                             </button>
                         )}
                     </div>

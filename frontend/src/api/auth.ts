@@ -1,7 +1,7 @@
-export interface User {
-    id: number;
-    username: string;
-}
+import type { ApiResponse, User } from "./api";
+
+const API_URL = 'https://localhost:7230/api'
+
 
 export interface RegisterRequest {
     username: string;
@@ -14,11 +14,6 @@ export interface LoginRequest {
     password: string;
 }
 
-export interface ApiResponse {
-    message?: string;
-    status: string;
-    data?: object;
-}
 
 export interface LoginResponse extends ApiResponse {
     data: { access_token: string };
@@ -29,7 +24,7 @@ export interface UserResponse extends ApiResponse {
 }
 
 export async function Users(): Promise<UserResponse> {
-    const res = await fetch('https://localhost:7230/users', {
+    const res = await fetch(`${API_URL}/users`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -43,7 +38,7 @@ export async function Users(): Promise<UserResponse> {
 }
 
 export async function Register(registerRequest: RegisterRequest): Promise<ApiResponse> {
-    const res = await fetch('https://localhost:7230/auth/register', {
+    const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -57,7 +52,7 @@ export async function Register(registerRequest: RegisterRequest): Promise<ApiRes
 }
 
 export async function Login(loginRequest: LoginRequest): Promise<LoginResponse> {
-    const res = await fetch('https://localhost:7230/auth/login', {
+    const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginRequest),

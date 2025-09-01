@@ -1,31 +1,162 @@
+import { createAsyncThunk, createListenerMiddleware, type PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
+import TaskAPI, { type TaskItem, type TaskRequest } from '../api/tasks';
+import type { ApiResponse } from '../api/api';
+import { fetchUsers, login } from './auth';
 
-export type TaskState = 'Todo' | 'InProgress' | 'Done';
+export interface TaskUpdate {
+    id: number;
+    data: TaskRequest;
+}
 
-export interface Task {
-    id?: number;
-    title: string;
-    description: string;
-    status: TaskState;
-    priority: number;
-    assigneeId: number;
-    creatorId?: number;
-    createdAt: string;
-};
-
+export interface TaskFilter {
+    status: string;
+    assignee: string;
+}
 
 interface taskState {
-    tasks: Array<Task>;
+    tasks: Array<TaskItem>;
+    task?: TaskItem;
+    loading: boolean;
+    api?: ApiResponse;
+    filter: TaskFilter;
 }
 
 const initialState: taskState = {
+    filter: { assignee: '', status: '' },
+    loading: false,
     tasks: [],
 };
+
+export const fetchTask = createAsyncThunk('api/tasks/{id}', async (taskId: number) => {
+    const response = await TaskAPI.GetTask(taskId);
+    return response;
+});
+
+export const fetchTasks = createAsyncThunk('api/tasks?', async (taskFilter: TaskFilter) => {
+    const response = await TaskAPI.FilterTasks(taskFilter.status, taskFilter.assignee);
+    return response;
+});
+
+export const saveTask = createAsyncThunk('api/tasks', async (taskRequest: TaskRequest) => {
+    const response = await TaskAPI.SaveTask(taskRequest);
+    return response;
+});
+
+export const updateTask = createAsyncThunk('api/tasks/update', async (taskUpdate: TaskUpdate) => {
+    const response = await TaskAPI.UpdateTask(taskUpdate.id, taskUpdate.data);
+    return response;
+});
+
+export const deleteTask = createAsyncThunk('api/tasks/delete', async (taskId: number) => {
+    const response = await TaskAPI.DeleteTask(taskId);
+    return response;
+});
 
 export const taskSlice = createSlice({
     name: 'tasks',
     initialState,
-    reducers: {},
+    reducers: {
+        filterTasks: (state, action: PayloadAction<TaskFilter>) => {
+            state.filter = action.payload;
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchTasks.pending, (state) => {
+            state.loading = true;
+        });
+
+        builder.addCase(fetchTasks.fulfilled, (state, action) => {
+            state.tasks = action.payload.data;
+            state.loading = false;
+        });
+
+        builder.addCase(fetchTasks.rejected, (state) => {
+            state.loading = false;
+        });
+
+        builder.addCase(saveTask.pending, (state) => {
+            state.loading = true;
+        });
+
+        builder.addCase(saveTask.fulfilled, (state) => {
+            state.loading = false;
+        });
+
+        builder.addCase(saveTask.rejected, (state) => {
+            state.loading = false;
+        });
+
+        builder.addCase(fetchTask.pending, (state) => {
+            state.loading = true;
+        });
+
+        builder.addCase(fetchTask.fulfilled, (state, action) => {
+            state.task = action.payload.data;
+            state.loading = false;
+        });
+
+        builder.addCase(fetchTask.rejected, (state) => {
+            state.loading = false;
+        });
+
+        builder.addCase(updateTask.pending, (state) => {
+            state.loading = true;
+        });
+
+        builder.addCase(updateTask.fulfilled, (state) => {
+            state.loading = false;
+        });
+
+        builder.addCase(updateTask.rejected, (state) => {
+            state.loading = false;
+        });
+    },
+});
+
+export const { filterTasks } = taskSlice.actions;
+
+export const taskListenerMiddleware = createListenerMiddleware();
+
+taskListenerMiddleware.startListening({
+    actionCreator: saveTask.fulfilled,
+    effect: async (action, listenerApi) => {
+        const state = listenerApi.getState();
+        listenerApi.dispatch(fetchTasks(state.tasks.filter));
+    },
+});
+
+taskListenerMiddleware.startListening({
+    actionCreator: updateTask.fulfilled,
+    effect: async (action, listenerApi) => {
+        const state = listenerApi.getState();
+        listenerApi.dispatch(fetchTasks(state.tasks.filter));
+    },
+});
+
+taskListenerMiddleware.startListening({
+    actionCreator: deleteTask.fulfilled,
+    effect: async (action, listenerApi) => {
+        const state = listenerApi.getState();
+        listenerApi.dispatch(fetchTasks(state.tasks.filter));
+    },
+});
+
+taskListenerMiddleware.startListening({
+    actionCreator: login.fulfilled,
+    effect: async (action, listenerApi) => {
+        const state = listenerApi.getState();
+        listenerApi.dispatch(fetchTasks(state.tasks.filter));
+        listenerApi.dispatch(fetchUsers());
+    },
+});
+
+taskListenerMiddleware.startListening({
+    actionCreator: filterTasks,
+    effect: async (action, listenerApi) => {
+        const state = listenerApi.getState();
+        listenerApi.dispatch(fetchTasks(state.tasks.filter));
+    },
 });
 
 export default taskSlice.reducer;

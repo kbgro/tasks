@@ -5,6 +5,7 @@ import Tasks from './pages/Tasks.tsx';
 import AddTask from './pages/AddTask.tsx';
 import ViewTask from './pages/ViewTask.tsx';
 import AuthLayout from './AuthLayout.tsx';
+import EditTask from './pages/EditTask.tsx';
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
             <Route element={<AuthLayout/>}>
                 <Route path="/" element={<Tasks />} />
                 <Route path="/tasks/new" element={<AddTask />} />
+                <Route path="/tasks/:id/edit" element={<EditTask/>} />
                 <Route path="/tasks/:id" element={<ViewTask />} />
             </Route>
         </Routes>

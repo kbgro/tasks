@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import tasksReducer from './tasks';
+import tasksReducer, { taskListenerMiddleware } from './tasks';
 import authReducer from './auth';
 
 export const store = configureStore({
@@ -7,6 +7,7 @@ export const store = configureStore({
         tasks: tasksReducer,
         users: authReducer,
     },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(taskListenerMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

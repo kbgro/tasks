@@ -4,11 +4,11 @@ import Input from '../components/Input';
 import { useFormik } from 'formik';
 import { useDispatch } from 'react-redux';
 import { login } from '../store/auth';
-import type { LoginRequest } from '../api/auth';
+import type { LoginRequest, LoginResponse } from '../api/auth';
 import { useAppSelector } from '../store/hooks';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import Alert from '../components/Alert';
-import { useEffect } from 'react';
+import type { AppDispatch } from '../store/store';
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email().required('Required'),
@@ -16,9 +16,9 @@ const LoginSchema = Yup.object().shape({
 });
 
 function Login() {
-    const navigator = useNavigate();
-    const dispatch = useDispatch();
-    const { loading, loggedIn, api } = useAppSelector((s) => s.users);
+    const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
+    const { loading, api } = useAppSelector((s) => s.users);
     const formik = useFormik<LoginRequest>({
         validationSchema: LoginSchema,
         initialValues: {
@@ -26,15 +26,11 @@ function Login() {
             email: '',
         },
         onSubmit: (values) => {
-            dispatch(login(values));
+            dispatch(login(values)).then(res => {
+                if ((res.payload as LoginResponse).status == "success") navigate('/');
+            });
         },
     });
-
-    useEffect(() => {
-        if (loggedIn) {
-            navigator('/');
-        }
-    }, [loggedIn, loading, api]);
 
     return (
         <section className="h-screen">
