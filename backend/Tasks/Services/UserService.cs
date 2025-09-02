@@ -22,6 +22,14 @@ namespace Tasks.Services
             return _hasher.VerifyHashedPassword(user, user.Password, password) == PasswordVerificationResult.Success;
 
         }
+        public async Task<bool> UserExist(string email, string username)
+        {
+            var userByEmail = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var userByUsername = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (userByEmail != null || userByUsername != null)
+                return true;
+            return false; 
+        }
 
         public async Task<User> AddUser(RegisterRequest register)
         {

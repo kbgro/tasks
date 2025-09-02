@@ -2,7 +2,7 @@ import { createAsyncThunk, createListenerMiddleware, type PayloadAction } from '
 import { createSlice } from '@reduxjs/toolkit';
 import TaskAPI, { type TaskItem, type TaskRequest } from '../api/tasks';
 import type { ApiResponse } from '../api/api';
-import { fetchUsers, login } from './auth';
+import { fetchUsers, login, logout } from './auth';
 
 export interface TaskUpdate {
     id: number;
@@ -28,28 +28,33 @@ const initialState: taskState = {
     tasks: [],
 };
 
-export const fetchTask = createAsyncThunk('api/tasks/{id}', async (taskId: number) => {
+export const fetchTask = createAsyncThunk('api/tasks/{id}', async (taskId: number, { dispatch }) => {
     const response = await TaskAPI.GetTask(taskId);
+    if (response.statusCode == 401) dispatch(logout());
     return response;
 });
 
-export const fetchTasks = createAsyncThunk('api/tasks?', async (taskFilter: TaskFilter) => {
+export const fetchTasks = createAsyncThunk('api/tasks?', async (taskFilter: TaskFilter, { dispatch }) => {
     const response = await TaskAPI.FilterTasks(taskFilter.status, taskFilter.assignee);
+    if (response.statusCode == 401) dispatch(logout());
     return response;
 });
 
-export const saveTask = createAsyncThunk('api/tasks', async (taskRequest: TaskRequest) => {
+export const saveTask = createAsyncThunk('api/tasks', async (taskRequest: TaskRequest, { dispatch }) => {
     const response = await TaskAPI.SaveTask(taskRequest);
+    if (response.statusCode == 401) dispatch(logout());
     return response;
 });
 
-export const updateTask = createAsyncThunk('api/tasks/update', async (taskUpdate: TaskUpdate) => {
+export const updateTask = createAsyncThunk('api/tasks/update', async (taskUpdate: TaskUpdate, { dispatch }) => {
     const response = await TaskAPI.UpdateTask(taskUpdate.id, taskUpdate.data);
+    if (response.statusCode == 401) dispatch(logout());
     return response;
 });
 
-export const deleteTask = createAsyncThunk('api/tasks/delete', async (taskId: number) => {
+export const deleteTask = createAsyncThunk('api/tasks/delete', async (taskId: number, { dispatch }) => {
     const response = await TaskAPI.DeleteTask(taskId);
+    if (response.statusCode == 401) dispatch(logout());
     return response;
 });
 

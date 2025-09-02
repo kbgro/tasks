@@ -44,12 +44,14 @@ async function FilterTasks(status: string, assignee: string): Promise<TasksRespo
         },
     });
 
-    const data = await res.json();
+    let data;
+    if (res.ok) data = await res.json();
 
     return {
         message: data.message,
-        status: res.status == 200 ? 'success' : 'failed',
+        status: res.ok ? 'success' : 'failed',
         data: data,
+        statusCode: res.status,
     };
 }
 
@@ -63,12 +65,14 @@ async function SaveTask(task: TaskRequest): Promise<TaskResponse> {
         body: JSON.stringify(task),
     });
 
-    const data = await res.json();
+    let data;
+    if (res.ok) data = await res.json();
 
     return {
         message: data.message,
-        status: res.status == 200 ? 'success' : 'failed',
+        status: res.ok ? 'success' : 'failed',
         data: data,
+        statusCode: res.status,
     };
 }
 
@@ -81,12 +85,14 @@ async function GetTask(taskId: number): Promise<TaskResponse> {
         },
     });
 
-    const data = await res.json();
+    let data;
+    if (res.ok) data = await res.json();
 
     return {
         message: data.message,
-        status: res.status == 200 ? 'success' : 'failed',
+        status: res.ok ? 'success' : 'failed',
         data: data,
+        statusCode: res.status,
     };
 }
 
@@ -100,12 +106,14 @@ async function UpdateTask(taskId: number, task: TaskRequest): Promise<TaskRespon
         body: JSON.stringify(task),
     });
 
-    const data = await res.json();
+    let data;
+    if (res.ok) data = await res.json();
 
     return {
         message: data.message,
-        status: res.status == 200 ? 'success' : 'failed',
+        status: res.ok ? 'success' : 'failed',
         data: data,
+        statusCode: res.status,
     };
 }
 
@@ -119,8 +127,9 @@ async function DeleteTask(taskId: number): Promise<ApiResponse> {
     });
 
     return {
-        message: "",
+        message: '',
         status: res.ok ? 'success' : 'failed',
+        statusCode: res.status,
     };
 }
 

@@ -9,7 +9,7 @@ function AuthLayout() {
 
     useEffect(() => {
         if (!loggedIn) navigate('/login');
-    }, []);
+    }, [loggedIn]);
 
     return (
         <>

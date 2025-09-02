@@ -7,6 +7,7 @@ namespace Tasks.Contracts
     {
         Task<User> AddUser(RegisterRequest register);
         Task<User?> GetUser(string email);
+        Task<bool> UserExist(string email, string username);
         Task<List<UserResponse>> Listing();
         bool VerifyUserPassword(User user, string password);
     }

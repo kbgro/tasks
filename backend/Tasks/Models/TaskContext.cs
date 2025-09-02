@@ -25,6 +25,14 @@ namespace Tasks.Models
                 .HasForeignKey(b => b.CreatorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
             base.OnModelCreating(modelBuilder);
         }
 

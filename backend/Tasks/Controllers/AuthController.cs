@@ -25,16 +25,16 @@ namespace Tasks.Controllers
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            var user = await _userService.GetUser(register.Email);
-            if (user != null)
+            var userExist = await _userService.UserExist(register.Email, register.Username);
+            if (userExist)
             {
                 return BadRequest(new Dictionary<string, object>()
                 {
-                    { "message", "Email already in user." }
+                    { "message", "Email or Username already in user." }
                 });
             }
 
-            user = await _userService.AddUser(register);
+             await _userService.AddUser(register);
 
             return Ok(new Dictionary<string, object>() { { "message", "Registration successful!" } });
         }

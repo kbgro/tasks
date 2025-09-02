@@ -3,23 +3,15 @@ import Task, { type Mode } from './Task';
 import { saveTask } from '../store/tasks';
 import { useAppSelector } from '../store/hooks';
 import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
-import type { TaskItem, TaskRequest, TaskResponse } from '../api/tasks';
+import type { TaskRequest, TaskResponse } from '../api/tasks';
 import type { AppDispatch } from '../store/store';
 
 function AddTask() {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { loading, api } = useAppSelector((s) => s.tasks);
+    const { loading } = useAppSelector((s) => s.tasks);
 
-    /*useEffect(() => {
-        if (api?.status == 'success') {
-            navigate(`/tasks/${(api?.data as TaskItem).id}`);
-        }
-    }, [loading, api]);*/
-
-    console.log({loading})
-    const handleSave = async (task:TaskRequest) => {
+    const handleSave = async (task: TaskRequest) => {
         try {
             const res = await dispatch(saveTask(task));
             navigate(`/tasks/${(res.payload as TaskResponse).data.id}`);

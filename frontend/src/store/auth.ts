@@ -18,6 +18,7 @@ const initialState: AuthState = {
     users: [],
 };
 
+
 export const login = createAsyncThunk('auth/login', async (loginRequest: LoginRequest) => {
     const response = await authAPI.Login(loginRequest);
     return response;
@@ -28,8 +29,9 @@ export const register = createAsyncThunk('auth/register', async (registerRequest
     return response;
 });
 
-export const fetchUsers = createAsyncThunk('users', async (thunkAPI) => {
+export const fetchUsers = createAsyncThunk('users', async (_, {dispatch}) => {
     const response = await authAPI.Users();
+    if (response.statusCode == 401) dispatch(logout());
     return response;
 });
 
@@ -75,6 +77,11 @@ export const authSlice = createSlice({
         builder.addCase(fetchUsers.fulfilled, (state, action) => {
             state.api = action.payload;
             state.users = action.payload.data;
+        });
+
+        builder.addCase(fetchUsers.rejected, (state) => {
+            state.loggedIn = false;
+            localStorage.removeItem("access_token");
         });
 
     },

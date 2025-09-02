@@ -2,6 +2,11 @@ import { useFormik } from 'formik';
 import { NavLink, useNavigate } from 'react-router';
 import * as Yup from 'yup';
 import Input from '../components/Input';
+import { register } from '../store/auth';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../store/store';
+import Alert from '../components/Alert';
+import { useState } from 'react';
 
 const LoginSchema = Yup.object().shape({
     username: Yup.string().required('Required'),
@@ -19,7 +24,9 @@ const LoginSchema = Yup.object().shape({
 });
 
 function Register() {
-    const navigator = useNavigate();
+    const [error, setError] = useState<string>();
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     const formik = useFormik({
         validationSchema: LoginSchema,
         initialValues: {
@@ -28,14 +35,27 @@ function Register() {
             email: '',
             confirmpassword: '',
         },
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
+            setError("");
             console.log({ values });
+            const res = await dispatch(register(values)).unwrap();
+            console.log({ res });
+            if (res.status == 'success') navigate('/login');
+            else {
+                setError(res.message);
+            }
         },
     });
 
     return (
         <section className="h-screen">
             <div className="h-full flex flex-col items-center justify-center px-6 py-8 mx-auto">
+                {error && (
+                    <div className="w-full sm:max-w-md mb-4">
+                        <Alert variant="Danger" message={error} />
+                    </div>
+                )}
+
                 <div className="w-full bg-white rounded-lg shadow sm:max-w-md">
                     <div className="p-6 space-y-4">
                         <h1 className="text-xl font-bold leading-tight text-gray-900">Create an a account</h1>

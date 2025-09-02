@@ -32,9 +32,10 @@ export async function Users(): Promise<UserResponse> {
         },
     });
 
-    const data = await res.json();
+    let data;
+    if (res.ok) data = await res.json();
 
-    return { message: data.message, status: res.status == 200 ? 'success' : 'failed', data: data };
+    return { message: data.message, status:  res.ok ? 'success' : 'failed', data: data , statusCode: res.status};
 }
 
 export async function Register(registerRequest: RegisterRequest): Promise<ApiResponse> {
@@ -48,7 +49,7 @@ export async function Register(registerRequest: RegisterRequest): Promise<ApiRes
 
     const data = await res.json();
 
-    return { message: data.message, status: res.status == 200 ? 'success' : 'failed' };
+    return { message: data.message, status:  res.ok ? 'success' : 'failed', statusCode: res.status };
 }
 
 export async function Login(loginRequest: LoginRequest): Promise<LoginResponse> {
@@ -62,7 +63,8 @@ export async function Login(loginRequest: LoginRequest): Promise<LoginResponse> 
 
     return {
         message: data.message,
-        status: res.status == 200 ? 'success' : 'failed',
+        status:  res.ok ? 'success' : 'failed',
+        statusCode: res.status,
         data: { access_token: data.access_token },
     };
 }
